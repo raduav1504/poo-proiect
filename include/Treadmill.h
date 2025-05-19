@@ -1,23 +1,24 @@
 #ifndef TREADMILL_H
 #define TREADMILL_H
 
-#include "Equipment.h"
-#include <memory>
+#include "EquipmentBase.h"
 
-class Treadmill : public Equipment {
+class Treadmill : public EquipmentBase {
 public:
-    explicit Treadmill(double max_speed);
+    explicit Treadmill(const std::string& id);
     Treadmill(const Treadmill& other);
     Treadmill& operator=(Treadmill other);
-    ~Treadmill() noexcept override = default;
+    ~Treadmill() override = default;
 
-    std::unique_ptr<Equipment> clone() const override;
-    void use(int minutes) override;
+    std::shared_ptr<EquipmentBase> clone() const override;
 
-    friend void swap(Treadmill& lhs, Treadmill& rhs) noexcept;
+protected:
+    void startUseImpl(std::shared_ptr<Member> member, int duration) override;
+    void updateStatus() override;
 
 private:
-    double maxSpeed_;
+    int speedLevel_;
+    void swap(Treadmill& other);
 };
 
 #endif // TREADMILL_H
