@@ -1,76 +1,46 @@
 #include <iostream>
-#include <limits>
 #include <memory>
+#include <vector>
+#include <map>
 
+#include "Treadmill.h"
+#include "StationaryBike.h"
+#include "WeightMachine.h"
 #include "Member.h"
 #include "Exceptions.h"
-#include "Bike.h"
-#include "Treadmill.h"
-#include "RowMachine.h"
 
 int main() {
     try {
-        std::cout << "Enter member name: ";
-        std::string name;
-        std::getline(std::cin, name);
-        Member member(name);
+        // Create equipments and members
+        std::vector<std::shared_ptr<EquipmentBase>> equipments;
+        equipments.push_back(std::make_shared<Treadmill>("T1"));
+        equipments.push_back(std::make_shared<StationaryBike>("B1"));
+        equipments.push_back(std::make_shared<WeightMachine>("W1"));
 
-        std::cout << "How many equipment items do you want to add? ";
-        int n; std::cin >> n;
-        if (n < 0) throw MemberError("negative equipment count");
+        std::map<int, std::shared_ptr<Member>> members;
+        members.emplace(1, std::make_shared<Member>(1, "Alice"));
+        members.emplace(2, std::make_shared<Member>(2, "Bob"));
 
-        for (int i = 0; i < n; ++i) {
-            std::cout << "\nEquipment #" << (i+1) << ":\n"
-                      << "  Type (Bike/Treadmill/RowMachine): ";
-            std::string type;
-            std::cin >> type;
-
-            if (type == "Bike") {
-                std::cout << "  Enter resistance (double): ";
-                double r; std::cin >> r;
-                member.addEquipment(std::make_unique<Bike>(r));
-            }
-            else if (type == "Treadmill") {
-                std::cout << "  Enter max speed (double): ";
-                double s; std::cin >> s;
-                member.addEquipment(std::make_unique<Treadmill>(s));
-            }
-            else if (type == "RowMachine") {
-                std::cout << "  Enter stroke rate (int): ";
-                int sr; std::cin >> sr;
-                member.addEquipment(std::make_unique<RowMachine>(sr));
-            }
-            else {
-                std::cerr << "  Unknown type, skipping...\n";
-            }
+        // Operate Treadmill for Alice
+        auto e0 = equipments.at(0);
+        if (auto tm = std::dynamic_pointer_cast<Treadmill>(e0)) {
+            tm->operate(members.at(1), 30);
         }
 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "\nCurrent state:\n" << member;
+        // Operate StationaryBike for Bob
+        equipments.at(1)->operate(members.at(2), 45);
 
-        while (true) {
-            std::cout << "\nEnter equipment name to use (or \"exit\"): ";
-            std::string eq;
-            std::getline(std::cin, eq);
-            if (eq == "exit") break;
+        // Clone WeightMachine and operate
+        auto wmClone = equipments.at(2)->clone();
+        equipments.push_back(wmClone);
+        equipments.back()->operate(members.at(1), 20);
 
-            std::cout << "Minutes to use: ";
-            int mins; std::cin >> mins;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Total equipments alive: " << EquipmentBase::getCount() << std::endl;
 
-            try {
-                member.useEquipment(eq, mins);
-            }
-            catch (const ClubException& e) {
-                std::cerr << "  Error: " << e.what() << "\n";
-            }
-        }
-
-        std::cout << "\nFinal state:\n" << member;
-    }
-    catch (const ClubException& ex) {
-        std::cerr << "Fatal: " << ex.what() << "\n";
-        return 1;
+    } catch (const BaseError& ex) {
+        std::cerr << "Fitness error: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        std::cerr << "Unexpected error: " << ex.what() << std::endl;
     }
     return 0;
 }
