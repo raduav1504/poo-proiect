@@ -2,38 +2,41 @@
 #define EQUIPMENT_H
 
 #include <memory>
-#include <ostream>
 #include <string>
+#include <ostream>
 
 class Equipment {
-protected:
-    std::string name_;
-    explicit Equipment(std::string name);
-
 public:
-    virtual ~Equipment() = default;
-    Equipment(const Equipment&) = default;
-    Equipment& operator=(const Equipment&) = default;
+    explicit Equipment(std::string name)
+      : name_{std::move(name)} {}
 
-    // theme-specific virtual
-    virtual void use(int minutes) = 0;
+    Equipment(const Equipment&)            = default;
+    Equipment& operator=(const Equipment&) = default;
+    virtual ~Equipment() noexcept          = default;
+
+    // Virtual “clone” constructor
     virtual std::unique_ptr<Equipment> clone() const = 0;
 
-    // non-virtual interface + private virtual hook
-    void print(std::ostream& os) const {
-        os << name_;
-        printDetails(os);
+    // Theme-specific action
+    virtual void use(int minutes) = 0;
+
+    // Non-virtual display interface
+    void display(std::ostream& os) const {
+        os << "[" << name_ << "] ";
+        doDisplay(os);
     }
 
-    const std::string& getName() const noexcept { return name_; }
+    friend std::ostream& operator<<(std::ostream& os, const Equipment& eq) {
+        eq.display(os);
+        return os;
+    }
+
+protected:
+    // Hook for subclass-specific display
+    virtual void doDisplay(std::ostream& os) const = 0;
 
 private:
-    virtual void printDetails(std::ostream& os) const = 0;
+    std::string name_;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Equipment& eq) {
-    eq.print(os);
-    return os;
-}
 
 #endif // EQUIPMENT_H
