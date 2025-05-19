@@ -1,27 +1,24 @@
 #ifndef MEMBER_H
 #define MEMBER_H
 
-#include "Equipment.h"
-#include <memory>
-#include <ostream>
 #include <string>
-#include <vector>
+#include <ostream>
 
 class Member {
 public:
-    explicit Member(std::string name);
-    Member(const Member&);
-    Member& operator=(Member);
+    Member(int id, const std::string& name);
+    Member(const Member& other);
+    Member& operator=(Member other);
+    ~Member() = default;
 
-    void addEquipment(std::unique_ptr<Equipment> eq);
-    void useEquipment(const std::string& eqName, int minutes);
-
+    int getId() const;
+    std::string getName() const;
     friend std::ostream& operator<<(std::ostream& os, const Member& m);
-    friend void swap(Member& a, Member& b) noexcept;
+    void swap(Member& other);
 
 private:
+    int id_;
     std::string name_;
-    std::vector<std::unique_ptr<Equipment>> equipment_;
 };
 
 #endif // MEMBER_H
