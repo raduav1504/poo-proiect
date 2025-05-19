@@ -1,4 +1,7 @@
 #include "Bike.h"
+#include "Exceptions.h"
+#include "Equipment.h"
+#include <algorithm>
 #include <iostream>
 #include <utility>
 
