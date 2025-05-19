@@ -1,67 +1,27 @@
 #include "Member.h"
-#include "Exceptions.h"
-#include "Bike.h"
-#include "Treadmill.h"
-#include "RowMachine.h"
-#include <algorithm>
-#include <iostream>
 #include <utility>
 
-Member::Member(std::string name)
-  : name_(std::move(name))
-{
-    if (name_.empty())
-        throw MemberError("empty name");
-}
+Member::Member(int id, const std::string& name)
+    : id_(id), name_(name) {}
 
 Member::Member(const Member& other)
-  : name_(other.name_)
-{
-    for (const auto& eq : other.equipment_)
-        equipment_.push_back(eq->clone());
-}
+    : id_(other.id_), name_(other.name_) {}
 
-Member& Member::operator=(Member rhs) {
-    swap(*this, rhs);
+Member& Member::operator=(Member other) {
+    swap(other);
     return *this;
 }
 
-void Member::addEquipment(std::unique_ptr<Equipment> eq) {
-    equipment_.push_back(std::move(eq));
+void Member::swap(Member& other) {
+    using std::swap;
+    swap(id_, other.id_);
+    swap(name_, other.name_);
 }
 
-void Member::useEquipment(const std::string& eqName, int minutes) {
-    for (auto& eq : equipment_) {
-        // downcast example
-        if (dynamic_cast<Bike*>(eq.get()) && eqName == "Bike") {
-            eq->use(minutes);
-            return;
-        }
-        if (dynamic_cast<Treadmill*>(eq.get()) && eqName == "Treadmill") {
-            eq->use(minutes);
-            return;
-        }
-        if (dynamic_cast<RowMachine*>(eq.get()) && eqName == "RowMachine") {
-            eq->use(minutes);
-            return;
-        }
-      if (eq->getName() == eqName) {
-        eq->use(minutes);
-        return;
-        }
-    }
-    throw UsageError("no equipment named " + eqName);
-}
+int Member::getId() const { return id_; }
+std::string Member::getName() const { return name_; }
 
 std::ostream& operator<<(std::ostream& os, const Member& m) {
-    os << "Member[" << m.name_ << "] owns:\n";
-    for (const auto& eq : m.equipment_)
-        os << "  - " << eq->getName()  << ":"<< "\n";
+    os << "Member[ID=" << m.id_ << ", Name=" << m.name_ << "]";
     return os;
-}
-
-void swap(Member& a, Member& b) noexcept {
-    using std::swap;
-    swap(a.name_,       b.name_);
-    swap(a.equipment_,  b.equipment_);
 }
