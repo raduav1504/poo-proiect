@@ -3,7 +3,7 @@
 
 class Bike : public Equipment {
 public:
-    Bike(double resistance);
+     explicit Bike(double resistance);
     Bike(const Bike& other);
     Bike& operator=(Bike other);
     ~Bike() override = default;
