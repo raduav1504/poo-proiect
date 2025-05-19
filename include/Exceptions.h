@@ -4,35 +4,32 @@
 #include <exception>
 #include <string>
 
-class ClubException : public std::exception {
+class FitnessException : public std::exception {
 public:
-    explicit ClubException(std::string msg) noexcept
-      : msg_{std::move(msg)} {}
-
-    const char* what() const noexcept override {
-        return msg_.c_str();
-    }
-
+    explicit FitnessException(const std::string& msg) : msg_(msg) {}
+    const char* what() const noexcept override { return msg_.c_str(); }
 private:
     std::string msg_;
 };
 
-class MemberError : public ClubException {
+// Distinct error categories
+typedef FitnessException BaseError;
+class EquipmentNotFoundException : public BaseError {
 public:
-    explicit MemberError(std::string msg) noexcept
-      : ClubException(std::move(msg)) {}
+    explicit EquipmentNotFoundException(const std::string& id)
+        : BaseError("Equipment not found: " + id) {}
 };
 
-class EquipmentError : public ClubException {
+class MemberNotFoundException : public BaseError {
 public:
-    explicit EquipmentError(std::string msg) noexcept
-      : ClubException(std::move(msg)) {}
+    explicit MemberNotFoundException(int id)
+        : BaseError("Member not found: " + std::to_string(id)) {}
 };
 
-class UsageError : public ClubException {
+class InvalidDurationException : public BaseError {
 public:
-    explicit UsageError(std::string msg) noexcept
-      : ClubException(std::move(msg)) {}
+    explicit InvalidDurationException(int d)
+        : BaseError("Invalid duration: " + std::to_string(d)) {}
 };
 
 #endif // EXCEPTIONS_H
