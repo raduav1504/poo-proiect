@@ -2,25 +2,22 @@
 #define TREADMILL_H
 
 #include "Equipment.h"
+#include <memory>
 
 class Treadmill : public Equipment {
 public:
-    explicit Treadmill(double maxSpeed);
-    Treadmill(const Treadmill&) = default;
-    Treadmill& operator=(const Treadmill&) = default;
-    ~Treadmill() override = default;
+    explicit Treadmill(double max_speed);
+    Treadmill(const Treadmill& other);
+    Treadmill& operator=(Treadmill other);
+    ~Treadmill() noexcept override = default;
 
-    void use(int minutes) override;
     std::unique_ptr<Equipment> clone() const override;
+    void use(int minutes) override;
 
-    friend void swap(Treadmill& a, Treadmill& b) noexcept;
+    friend void swap(Treadmill& lhs, Treadmill& rhs) noexcept;
 
 private:
     double maxSpeed_;
-
-    void printDetails(std::ostream& os) const override {
-        os << " (maxSpeed=" << maxSpeed_ << ")";
-    }
 };
 
 #endif // TREADMILL_H
