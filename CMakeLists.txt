@@ -20,7 +20,11 @@ include(cmake/CompilerFlags.cmake)
 include(cmake/CopyHelper.cmake)
 
 ###############################################################################
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
+file(GLOB_RECURSE PROJECT_SOURCES
+    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+)
 # external dependencies with FetchContent
 # include(FetchContent)
 #
