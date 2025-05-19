@@ -2,25 +2,22 @@
 #define ROWMACHINE_H
 
 #include "Equipment.h"
+#include <memory>
 
 class RowMachine : public Equipment {
 public:
-    explicit RowMachine(int strokeRate);
-    RowMachine(const RowMachine&) = default;
-    RowMachine& operator=(const RowMachine&) = default;
-    ~RowMachine() override = default;
+    explicit RowMachine(int stroke_rate);
+    RowMachine(const RowMachine& other);
+    RowMachine& operator=(RowMachine other);
+    ~RowMachine() noexcept override = default;
 
-    void use(int minutes) override;
     std::unique_ptr<Equipment> clone() const override;
+    void use(int minutes) override;
 
-    friend void swap(RowMachine& a, RowMachine& b) noexcept;
+    friend void swap(RowMachine& lhs, RowMachine& rhs) noexcept;
 
 private:
     int strokeRate_;
-
-    void printDetails(std::ostream& os) const override {
-        os << " (strokeRate=" << strokeRate_ << ")";
-    }
 };
 
 #endif // ROWMACHINE_H
