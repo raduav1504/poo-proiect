@@ -1,20 +1,26 @@
-#pragma once
+#ifndef ROWMACHINE_H
+#define ROWMACHINE_H
+
 #include "Equipment.h"
 
 class RowMachine : public Equipment {
 public:
-    explicit RowMachine(int stroke_rate);
-    RowMachine(const RowMachine& other);
-    RowMachine& operator=(RowMachine other);
+    explicit RowMachine(int strokeRate);
+    RowMachine(const RowMachine&) = default;
+    RowMachine& operator=(const RowMachine&) = default;
     ~RowMachine() override = default;
 
+    void use(int minutes) override;
     std::unique_ptr<Equipment> clone() const override;
 
-protected:
-    void print(std::ostream& os) const override;
-    void do_use(int minutes) override;
+    friend void swap(RowMachine& a, RowMachine& b) noexcept;
 
 private:
-    int stroke_rate_;
-    friend void swap(RowMachine& a, RowMachine& b);
+    int strokeRate_;
+
+    void printDetails(std::ostream& os) const override {
+        os << " (strokeRate=" << strokeRate_ << ")";
+    }
 };
+
+#endif // ROWMACHINE_H
