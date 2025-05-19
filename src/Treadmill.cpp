@@ -1,28 +1,31 @@
 #include "Treadmill.h"
-#include "Exceptions.h"
-#include <algorithm>
 #include <iostream>
 
-Treadmill::Treadmill(double maxSpeed)
-  : Equipment("Treadmill"), maxSpeed_(maxSpeed)
-{
-    if (maxSpeed <= 0)
-        throw EquipmentError("max_speed must be positive");
+Treadmill::Treadmill(const std::string& id)
+    : EquipmentBase(id), speedLevel_(1) {}
+
+Treadmill::Treadmill(const Treadmill& other)
+    : EquipmentBase(other), speedLevel_(other.speedLevel_) {}
+
+Treadmill& Treadmill::operator=(Treadmill other) {
+    swap(other);
+    return *this;
 }
 
-void Treadmill::use(int minutes) {
-    if (minutes < 0) throw UsageError("negative minutes");
-    std::cout << name_ << ": running at up to "
-              << maxSpeed_ << " km/h for "
-              << minutes << " min\n";
+void Treadmill::swap(Treadmill& other) {
+    EquipmentBase::swap(*this, other);
+    std::swap(speedLevel_, other.speedLevel_);
 }
 
-std::unique_ptr<Equipment> Treadmill::clone() const {
-    return std::make_unique<Treadmill>(*this);
+std::shared_ptr<EquipmentBase> Treadmill::clone() const {
+    return std::make_shared<Treadmill>(*this);
 }
 
-void swap(Treadmill& a, Treadmill& b) noexcept {
-    using std::swap;
-    swap(a.name_,      b.name_);
-    swap(a.maxSpeed_,  b.maxSpeed_);
+void Treadmill::startUseImpl(std::shared_ptr<Member> member, int duration) {
+    std::cout << "Treadmill " << getId() << " started for "
+              << duration << " minutes by " << member->getName() << "\n";
+}
+
+void Treadmill::updateStatus() {
+    std::cout << "Treadmill " << getId() << " status updated (speedLevel=" << speedLevel_ << ")\n";
 }
