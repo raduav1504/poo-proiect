@@ -45,6 +45,10 @@ void Member::useEquipment(const std::string& eqName, int minutes) {
             eq->use(minutes);
             return;
         }
+      if (eq->getName() == eqName) {
+        eq->use(minutes);
+        return;
+        }
     }
     throw UsageError("no equipment named " + eqName);
 }
@@ -52,7 +56,7 @@ void Member::useEquipment(const std::string& eqName, int minutes) {
 std::ostream& operator<<(std::ostream& os, const Member& m) {
     os << "Member[" << m.name_ << "] owns:\n";
     for (const auto& eq : m.equipment_)
-        os << "  - " << *eq << "\n";
+        os << "  - " << eq->getName()  << ":"<< "\n";
     return os;
 }
 
