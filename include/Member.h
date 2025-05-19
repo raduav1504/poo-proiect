@@ -6,7 +6,7 @@
 
 class Member {
 public:
-    Member(std::string name);
+    explicit Member(std::string name);
     Member(const Member& other);
     Member& operator=(Member other);
     ~Member() = default;
