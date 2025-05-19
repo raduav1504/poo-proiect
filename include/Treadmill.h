@@ -3,7 +3,7 @@
 
 class Treadmill : public Equipment {
 public:
-    Treadmill(double max_speed);
+    explicit Treadmill(double max_speed);
     Treadmill(const Treadmill& other);
     Treadmill& operator=(Treadmill other);
     ~Treadmill() override = default;
