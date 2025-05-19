@@ -12,7 +12,7 @@ Member::Member(std::string name)
 
 Member::Member(const Member& other)
     : name_(other.name_) {
-    for (auto& eq : other.equipment_) {
+    for (const auto& eq : other.equipment_) {
         equipment_.push_back(eq->clone());
     }
 }
@@ -47,7 +47,7 @@ void Member::useEquipment(const std::string& eqName, int minutes) {
 
 std::ostream& operator<<(std::ostream& os, const Member& m) {
     os << "Member[" << m.name_ << "] owns:\n";
-    for (auto& eq : m.equipment_) {
+    for (const auto& eq : m.equipment_) {
         os << "  - " << *eq << "\n";
     }
     return os;
