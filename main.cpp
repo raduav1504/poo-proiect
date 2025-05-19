@@ -11,7 +11,7 @@
 
 int main() {
     try {
-        // 1. Citește numele membrulu
+        // 1. Citește numele membrului
         std::cout << "Enter member name: ";
         std::string name;
         std::getline(std::cin, name);
