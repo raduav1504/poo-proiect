@@ -1,26 +1,36 @@
-#pragma once
-#include <stdexcept>
+#ifndef EXCEPTIONS_H
+#define EXCEPTIONS_H
+
+#include <exception>
 #include <string>
 
-class ClubException : public std::runtime_error {
+class ClubException : public std::exception {
 public:
-    using std::runtime_error::runtime_error;
-};
-
-class EquipmentError : public ClubException {
-public:
-    explicit EquipmentError(const std::string& msg)
-        : ClubException("EquipmentError: " + msg) {}
+    explicit ClubException(std::string msg)
+      : msg_(std::move(msg)) {}
+    const char* what() const noexcept override {
+        return msg_.c_str();
+    }
+private:
+    std::string msg_;
 };
 
 class MemberError : public ClubException {
 public:
-    explicit MemberError(const std::string& msg)
-        : ClubException("MemberError: " + msg) {}
+    explicit MemberError(const std::string& m)
+      : ClubException("MemberError: " + m) {}
+};
+
+class EquipmentError : public ClubException {
+public:
+    explicit EquipmentError(const std::string& m)
+      : ClubException("EquipmentError: " + m) {}
 };
 
 class UsageError : public ClubException {
 public:
-    explicit UsageError(const std::string& msg)
-        : ClubException("UsageError: " + msg) {}
+    explicit UsageError(const std::string& m)
+      : ClubException("UsageError: " + m) {}
 };
+
+#endif // EXCEPTIONS_H
