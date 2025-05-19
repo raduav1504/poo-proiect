@@ -8,7 +8,6 @@
 #include "Treadmill.h"
 #include "RowMachine.h"
 
-
 int main() {
     try {
         std::cout << "Enter member name: ";
