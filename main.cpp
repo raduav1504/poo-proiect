@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <memory>  
 #include "Member.h"
 #include "Exceptions.h"
 #include "Bike.h"
