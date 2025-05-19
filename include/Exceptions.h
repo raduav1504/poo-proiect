@@ -6,31 +6,33 @@
 
 class ClubException : public std::exception {
 public:
-    explicit ClubException(std::string msg)
-      : msg_(std::move(msg)) {}
+    explicit ClubException(std::string msg) noexcept
+      : msg_{std::move(msg)} {}
+
     const char* what() const noexcept override {
         return msg_.c_str();
     }
+
 private:
     std::string msg_;
 };
 
 class MemberError : public ClubException {
 public:
-    explicit MemberError(const std::string& m)
-      : ClubException("MemberError: " + m) {}
+    explicit MemberError(std::string msg) noexcept
+      : ClubException(std::move(msg)) {}
 };
 
 class EquipmentError : public ClubException {
 public:
-    explicit EquipmentError(const std::string& m)
-      : ClubException("EquipmentError: " + m) {}
+    explicit EquipmentError(std::string msg) noexcept
+      : ClubException(std::move(msg)) {}
 };
 
 class UsageError : public ClubException {
 public:
-    explicit UsageError(const std::string& m)
-      : ClubException("UsageError: " + m) {}
+    explicit UsageError(std::string msg) noexcept
+      : ClubException(std::move(msg)) {}
 };
 
 #endif // EXCEPTIONS_H
