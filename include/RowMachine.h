@@ -3,7 +3,7 @@
 
 class RowMachine : public Equipment {
 public:
-    RowMachine(int stroke_rate);
+    explicit RowMachine(int stroke_rate);
     RowMachine(const RowMachine& other);
     RowMachine& operator=(RowMachine other);
     ~RowMachine() override = default;
