@@ -30,14 +30,7 @@ static void clearInput() {
 
 int main() {
     ClubManager club;
-
-    // --- seed the same initial data ---
-    club.addMember("Alice");
-    club.addMember("Bob");
-    club.addEquipmentToMember("Alice", std::make_shared<Treadmill>("T1", 12.5));
-    club.addEquipmentToMember("Alice", std::make_shared<StationaryBike>("B1",  7.0));
-    club.addEquipmentToMember("Bob",   std::make_shared<WeightMachine>("W1",50.0));
-
+    
     bool running = true;
     while (running) {
         printMenu();
