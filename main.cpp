@@ -1,7 +1,6 @@
 // main.cpp
 #include <iostream>
 #include <memory>
-
 #include "exceptions.hpp"
 #include "equipment.hpp"
 #include "treadmill.hpp"
