@@ -1,46 +1,56 @@
+// main.cpp
 #include <iostream>
 #include <memory>
-#include <vector>
-#include <map>
 
-#include "Treadmill.h"
-#include "StationaryBike.h"
-#include "WeightMachine.h"
-#include "Member.h"
-#include "Exceptions.h"
+#include "exceptions.hpp"
+#include "equipment.hpp"
+#include "treadmill.hpp"
+#include "stationary_bike.hpp"
+#include "weight_machine.hpp"
+#include "manager.hpp"
 
 int main() {
+    ClubManager club;
+
     try {
-        // Create equipments and members
-        std::vector<std::shared_ptr<EquipmentBase>> equipments;
-        equipments.push_back(std::make_shared<Treadmill>("T1"));
-        equipments.push_back(std::make_shared<StationaryBike>("B1"));
-        equipments.push_back(std::make_shared<WeightMachine>("W1"));
+        // 1) Add members
+        club.addMember("Alice");
+        club.addMember("Bob");
 
-        std::map<int, std::shared_ptr<Member>> members;
-        members.emplace(1, std::make_shared<Member>(1, "Alice"));
-        members.emplace(2, std::make_shared<Member>(2, "Bob"));
+        // 2) Add equipment to members
+        club.addEquipmentToMember("Alice",
+            std::make_shared<Treadmill>("T1", 12.5));
+        club.addEquipmentToMember("Alice",
+            std::make_shared<StationaryBike>("B1", 7.0));
+        club.addEquipmentToMember("Bob",
+            std::make_shared<WeightMachine>("W1", 50.0));
 
-        // Operate Treadmill for Alice
-        auto e0 = equipments.at(0);
-        if (auto tm = std::dynamic_pointer_cast<Treadmill>(e0)) {
-            tm->operate(members.at(1), 30);
-        }
+        // 3) Report how many EquipmentBase instances exist
+        std::cout << "Total equipment in club: "
+                  << EquipmentBase::getCount() << "\n\n";
 
-        // Operate StationaryBike for Bob
-        equipments.at(1)->operate(members.at(2), 45);
+        // 4) Perform some workouts
+        club.workout("Alice", "T1", 30);   // OK
+        club.workout("Alice", "B1", 20);   // OK
+        club.workout("Bob",   "W1", 15);   // OK
 
-        // Clone WeightMachine and operate
-        auto wmClone = equipments.at(2)->clone();
-        equipments.push_back(wmClone);
-        equipments.back()->operate(members.at(1), 20);
+        // 5) This one will throw EquipmentNotFoundException
+        club.workout("Alice", "UNKNOWN_ID", 10);
 
-        std::cout << "Total equipments alive: " << EquipmentBase::getCount() << std::endl;
-
-    } catch (const BaseError& ex) {
-        std::cerr << "Fitness error: " << ex.what() << std::endl;
-    } catch (const std::exception& ex) {
-        std::cerr << "Unexpected error: " << ex.what() << std::endl;
+    } 
+    catch (const EquipmentNotFoundException& e) {
+        std::cerr << "[Equipment error] " << e.what() << "\n";
     }
+    catch (const MemberNotFoundException& e) {
+        std::cerr << "[Member error]    " << e.what() << "\n";
+    }
+    catch (const InvalidDurationException& e) {
+        std::cerr << "[Duration error]  " << e.what() << "\n";
+    }
+    catch (const AppException& e) {
+        // fallback for any other AppException
+        std::cerr << "[App error]       " << e.what() << "\n";
+    }
+
     return 0;
 }
