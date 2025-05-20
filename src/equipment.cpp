@@ -2,6 +2,7 @@
 
 int EquipmentBase::count_ = 0;
 
+
 EquipmentBase::EquipmentBase(const std::string& id)
   : id_(id) { ++count_; }
 
