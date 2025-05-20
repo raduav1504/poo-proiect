@@ -22,3 +22,13 @@ void ClubManager::workout(const std::string& name,
         throw MemberNotFoundException(name);
     it->second->doWorkout(eqId, minutes);
 }
+
+void ClubManager::adjustTreadmillSpeed(const std::string& name,
+                                       const std::string& eqId,
+                                       double newSpeed)
+{
+    auto it = members_.find(name);
+    if (it == members_.end())
+        throw MemberNotFoundException(name);
+    it->second->adjustTreadmillSpeed(eqId, newSpeed);
+}
