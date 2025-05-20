@@ -3,6 +3,7 @@
 #include <string>
 #include "exceptions.hpp"
 
+
 class EquipmentBase {
 public:
     EquipmentBase(const std::string& id);
