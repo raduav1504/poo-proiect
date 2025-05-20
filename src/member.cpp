@@ -1,5 +1,5 @@
+// src/member.cpp
 #include "member.hpp"
-#include "exceptions.hpp"
 #include "treadmill.hpp"    // for dynamic_pointer_cast<Treadmill>
 #include <algorithm>
 
@@ -37,18 +37,21 @@ void Member::doWorkout(const std::string& eqId, int minutes) {
     (*it)->operate(minutes);
 }
 
-void Member::adjustTreadmillSpeed(const std::string& eqId, double newSpeed) {
+std::shared_ptr<EquipmentBase> Member::getEquipment(const std::string& eqId) const {
     auto it = std::find_if(
         equipment_.begin(), equipment_.end(),
         [&](const auto& e){ return e->id() == eqId; }
     );
     if (it == equipment_.end())
         throw EquipmentNotFoundException(eqId);
+    return *it;
+}
 
-    auto tm = std::dynamic_pointer_cast<Treadmill>(*it);
+void Member::adjustTreadmillSpeed(const std::string& eqId, double newSpeed) {
+    auto eq = getEquipment(eqId);
+    auto tm = std::dynamic_pointer_cast<Treadmill>(eq);
     if (!tm)
         throw AppException("Equipment `" + eqId + "` is not a treadmill");
-
     tm->setMaxSpeed(newSpeed);
 }
 
@@ -58,11 +61,3 @@ std::ostream& operator<<(std::ostream& os, const Member& m) {
         os << "    - " << eq->id() << "\n";
     return os;
 }
-std::shared_ptr<EquipmentBase> Member::getEquipment(const std::string& eqId) const {
-    auto it = std::find_if(equipment_.begin(), equipment_.end(),
-        [&](const auto& e){ return e->id() == eqId; });
-    if (it == equipment_.end())
-        throw EquipmentNotFoundException(eqId);
-    return *it;
-}
-
