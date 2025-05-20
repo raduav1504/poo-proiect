@@ -1,5 +1,6 @@
 #include "equipment.hpp"
 
+
 int EquipmentBase::count_ = 0;
 
 EquipmentBase::EquipmentBase(const std::string& id)
