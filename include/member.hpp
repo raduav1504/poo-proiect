@@ -3,7 +3,9 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <algorithm>
 #include "equipment.hpp"
+#include "exceptions.hpp"
 
 class Member {
 public:
@@ -14,9 +16,9 @@ public:
 
     void addEquipment(const std::shared_ptr<EquipmentBase>& eq);
     void doWorkout(const std::string& eqId, int minutes);
-
-    /// Down-cast example: find a treadmill by id and bump its speed
-    void adjustTreadmillSpeed(const std::string& eqId, double newSpeed);
+    
+    // <-- new helper
+    std::shared_ptr<EquipmentBase> getEquipment(const std::string& eqId) const;
 
     friend std::ostream& operator<<(std::ostream& os, const Member& m);
 
