@@ -7,7 +7,7 @@ public:
     std::shared_ptr<EquipmentBase> clone() const override;
 
     /// Domain-specific API: adjust the running speed
-    vvoid setMaxSpeed(double s) { maxSpeed_ = s; }
+    void setMaxSpeed(double s) { maxSpeed_ = s; }
 
 protected:
     Treadmill(const Treadmill& other);
