@@ -3,7 +3,6 @@
 #include <iostream>
 #include <memory>
 #include <limits>
-
 #include "exceptions.hpp"
 #include "equipment.hpp"
 #include "treadmill.hpp"
