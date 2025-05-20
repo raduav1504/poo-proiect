@@ -8,7 +8,6 @@
 #include "weight_machine.hpp"
 #include "manager.hpp"
 
-
 int main() {
     ClubManager club;
 
