@@ -1,7 +1,6 @@
-// member.cpp
-
 #include "member.hpp"
 #include "exceptions.hpp"
+#include "treadmill.hpp"    // for dynamic_pointer_cast<Treadmill>
 #include <algorithm>
 
 Member::Member(std::string name)
@@ -9,7 +8,6 @@ Member::Member(std::string name)
 
 Member::Member(const Member& other)
   : name_(other.name_) {
-    // copy each piece of equipment by cloning
     for (const auto& eq : other.equipment_)
         equipment_.push_back(eq->clone());
 }
@@ -37,6 +35,21 @@ void Member::doWorkout(const std::string& eqId, int minutes) {
     if (it == equipment_.end())
         throw EquipmentNotFoundException(eqId);
     (*it)->operate(minutes);
+}
+
+void Member::adjustTreadmillSpeed(const std::string& eqId, double newSpeed) {
+    auto it = std::find_if(
+        equipment_.begin(), equipment_.end(),
+        [&](const auto& e){ return e->id() == eqId; }
+    );
+    if (it == equipment_.end())
+        throw EquipmentNotFoundException(eqId);
+
+    auto tm = std::dynamic_pointer_cast<Treadmill>(*it);
+    if (!tm)
+        throw AppException("Equipment `" + eqId + "` is not a treadmill");
+
+    tm->setMaxSpeed(newSpeed);
 }
 
 std::ostream& operator<<(std::ostream& os, const Member& m) {
