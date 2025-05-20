@@ -1,11 +1,8 @@
-// include/manager.hpp
 #pragma once
 #include <map>
 #include <string>
 #include <memory>
 #include "member.hpp"
-#include "exceptions.hpp"
-#include "treadmill.hpp"
 
 class ClubManager {
 public:
@@ -15,12 +12,12 @@ public:
     void workout(const std::string& name,
                  const std::string& eqId, int minutes);
 
-    // adjust the maxSpeed_ of a specific Treadmill
+    // adjustTreadmillSpeed is exposed here
     void adjustTreadmillSpeed(const std::string& memberName,
                               const std::string& eqId,
                               double newMaxSpeed);
 
-    // utility to dump all members + their equipment
+    // helper to dump all members
     void printAllMembers() const;
 
 private:
