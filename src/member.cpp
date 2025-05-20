@@ -58,3 +58,11 @@ std::ostream& operator<<(std::ostream& os, const Member& m) {
         os << "    - " << eq->id() << "\n";
     return os;
 }
+std::shared_ptr<EquipmentBase> Member::getEquipment(const std::string& eqId) const {
+    auto it = std::find_if(equipment_.begin(), equipment_.end(),
+        [&](const auto& e){ return e->id() == eqId; });
+    if (it == equipment_.end())
+        throw EquipmentNotFoundException(eqId);
+    return *it;
+}
+
