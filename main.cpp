@@ -1,5 +1,8 @@
+// main.cpp
+
 #include <iostream>
 #include <memory>
+#include <limits>
 
 #include "exceptions.hpp"
 #include "equipment.hpp"
@@ -8,56 +11,129 @@
 #include "weight_machine.hpp"
 #include "manager.hpp"
 
+static void printMenu() {
+    std::cout << "\n=== Club Manager ===\n"
+                 "1) Add member\n"
+                 "2) Add equipment to member\n"
+                 "3) List all members and their equipment\n"
+                 "4) Do a workout\n"
+                 "5) Show total equipment count\n"
+                 "6) Bump a treadmill’s max speed\n"
+                 "0) Exit\n"
+                 "Choose an option: ";
+}
+
+// helper to clear a failed std::cin and skip to end of line
+static void clearInput() {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
 int main() {
     ClubManager club;
 
-    try {
-        // 1) Add members
-        club.addMember("Alice");
-        club.addMember("Bob");
+    // --- seed the same initial data ---
+    club.addMember("Alice");
+    club.addMember("Bob");
+    club.addEquipmentToMember("Alice", std::make_shared<Treadmill>("T1", 12.5));
+    club.addEquipmentToMember("Alice", std::make_shared<StationaryBike>("B1",  7.0));
+    club.addEquipmentToMember("Bob",   std::make_shared<WeightMachine>("W1",50.0));
 
-        // 2) Add equipment
-        club.addEquipmentToMember("Alice",
-            std::make_shared<Treadmill>("T1", 12.5));
-        club.addEquipmentToMember("Alice",
-            std::make_shared<StationaryBike>("B1", 7.0));
-        club.addEquipmentToMember("Bob",
-            std::make_shared<WeightMachine>("W1", 50.0));
+    bool running = true;
+    while (running) {
+        printMenu();
+        int choice;
+        if (!(std::cin >> choice)) {
+            // invalid input: exit
+            break;
+        }
 
-        // 3) Count
-        std::cout << "Total equipment in club: "
-                  << EquipmentBase::getCount() << "\n\n";
+        try {
+            switch (choice) {
+                case 1: {
+                    std::cout << "Enter member name: ";
+                    std::string name;
+                    std::cin >> name;
+                    club.addMember(name);
+                    std::cout << "Added member \"" << name << "\".\n";
+                    break;
+                }
+                case 2: {
+                    std::cout << "Member name: ";
+                    std::string name;  std::cin >> name;
+                    std::cout << "Equipment type (treadmill/bike/weight): ";
+                    std::string type;  std::cin >> type;
+                    std::cout << "Equipment ID: ";
+                    std::string id;    std::cin >> id;
 
-        // 4) Workouts
-        club.workout("Alice", "T1", 30);
-        club.workout("Alice", "B1", 20);
-        club.workout("Bob",   "W1", 15);
+                    if (type == "treadmill") {
+                        std::cout << "Max speed (km/h): ";
+                        double v; std::cin >> v;
+                        club.addEquipmentToMember(name, std::make_shared<Treadmill>(id, v));
+                    }
+                    else if (type == "bike") {
+                        std::cout << "Resistance: ";
+                        double r; std::cin >> r;
+                        club.addEquipmentToMember(name, std::make_shared<StationaryBike>(id, r));
+                    }
+                    else if (type == "weight") {
+                        std::cout << "Weight (kg): ";
+                        double w; std::cin >> w;
+                        club.addEquipmentToMember(name, std::make_shared<WeightMachine>(id, w));
+                    }
+                    else {
+                        std::cout << "Unknown equipment type.\n";
+                        break;
+                    }
+                    std::cout << "Equipment added.\n";
+                    break;
+                }
+                case 3:
+                    club.printAllMembers();
+                    break;
 
-        // 5) Missing equipment (will throw)
-        club.workout("Alice", "UNKNOWN_ID", 10);
-    }
-    catch (const EquipmentNotFoundException& e) {
-        std::cerr << "[Equipment error] " << e.what() << "\n";
-    }
-    catch (const MemberNotFoundException& e) {
-        std::cerr << "[Member error]    " << e.what() << "\n";
-    }
-    catch (const InvalidDurationException& e) {
-        std::cerr << "[Duration error]  " << e.what() << "\n";
-    }
-    catch (const AppException& e) {
-        std::cerr << "[App error]       " << e.what() << "\n";
+                case 4: {
+                    std::cout << "Member name: ";
+                    std::string name; std::cin >> name;
+                    std::cout << "Equipment ID: ";
+                    std::string id;   std::cin >> id;
+                    std::cout << "Minutes: ";
+                    int m;            std::cin >> m;
+                    club.workout(name, id, m);
+                    break;
+                }
+
+                case 5:
+                    std::cout << "Total equipment in club: "
+                              << EquipmentBase::getCount() << "\n";
+                    break;
+
+                case 6: {
+                    std::cout << "Member name: ";
+                    std::string name; std::cin >> name;
+                    std::cout << "Treadmill ID to bump: ";
+                    std::string id;   std::cin >> id;
+                    std::cout << "New max speed (km/h): ";
+                    double speed;     std::cin >> speed;
+                    club.adjustTreadmillSpeed(name, id, speed);
+                    std::cout << "Speed updated.\n";
+                    break;
+                }
+
+                case 0:
+                    running = false;
+                    break;
+
+                default:
+                    std::cout << "Invalid option.\n";
+            }
+        }
+        catch (const AppException& e) {
+            std::cerr << "[Error] " << e.what() << "\n";
+            clearInput();
+        }
     }
 
-    // 6) Now our new example: down-cast & adjust
-    try {
-        std::cout << "\n-- Bumping Alice’s treadmill speed to 15 km/h --\n";
-        club.adjustTreadmillSpeed("Alice", "T1", 15.0);
-        club.workout("Alice", "T1", 10);
-    }
-    catch (const AppException& e) {
-        std::cerr << "[Error] " << e.what() << "\n";
-    }
-
+    std::cout << "Goodbye!\n";
     return 0;
 }
