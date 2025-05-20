@@ -1,8 +1,7 @@
-// src/manager.cpp
 #include "manager.hpp"
 #include "exceptions.hpp"
-#include "treadmill.hpp"           // for dynamic_pointer_cast
-#include <iostream>                // for std::cout, std::endl
+#include "treadmill.hpp"    // for dynamic_pointer_cast
+#include <iostream>
 
 void ClubManager::addMember(const std::string& name) {
     members_.emplace(name, std::make_shared<Member>(name));
@@ -18,7 +17,8 @@ void ClubManager::addEquipmentToMember(const std::string& name,
 }
 
 void ClubManager::workout(const std::string& name,
-                          const std::string& eqId, int minutes)
+                          const std::string& eqId,
+                          int minutes)
 {
     auto it = members_.find(name);
     if (it == members_.end())
@@ -30,27 +30,21 @@ void ClubManager::adjustTreadmillSpeed(const std::string& memberName,
                                        const std::string& eqId,
                                        double newMaxSpeed)
 {
-    // 1) find the member
     auto mit = members_.find(memberName);
     if (mit == members_.end())
         throw MemberNotFoundException(memberName);
 
-    // 2) find the equipment by id
+    // grab the base-pointer, then try downcast
     auto eqPtr = mit->second->getEquipment(eqId);
-    if (!eqPtr)
-        throw EquipmentNotFoundException(eqId);
-
-    // 3) down-cast to Treadmill
     auto tm = std::dynamic_pointer_cast<Treadmill>(eqPtr);
     if (!tm)
-        throw AppException("Equipment '" + eqId + "' is not a treadmill");
+        throw EquipmentNotFoundException(eqId);  // or a custom “not-a-treadmill” exception
 
-    // 4) adjust its speed
     tm->setMaxSpeed(newMaxSpeed);
 }
 
 void ClubManager::printAllMembers() const {
-    for (const auto& [name, memberPtr] : members_) {
-        std::cout << *memberPtr << std::endl;
+    for (const auto& [name, mptr] : members_) {
+        std::cout << *mptr << "\n";
     }
 }
