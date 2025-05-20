@@ -1,9 +1,10 @@
+// include/member.hpp
 #pragma once
+
 #include <string>
 #include <vector>
 #include <memory>
 #include <iostream>
-#include <algorithm>
 #include "equipment.hpp"
 #include "exceptions.hpp"
 
@@ -16,9 +17,12 @@ public:
 
     void addEquipment(const std::shared_ptr<EquipmentBase>& eq);
     void doWorkout(const std::string& eqId, int minutes);
-    
-    // <-- new helper
+
+    // look up an equipment by ID (throws if not found)
     std::shared_ptr<EquipmentBase> getEquipment(const std::string& eqId) const;
+
+    // the new helper: down-cast to Treadmill and set its speed
+    void adjustTreadmillSpeed(const std::string& eqId, double newSpeed);
 
     friend std::ostream& operator<<(std::ostream& os, const Member& m);
 
