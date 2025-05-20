@@ -14,6 +14,10 @@ public:
 
     void addEquipment(const std::shared_ptr<EquipmentBase>& eq);
     void doWorkout(const std::string& eqId, int minutes);
+
+    /// Down-cast example: find a treadmill by id and bump its speed
+    void adjustTreadmillSpeed(const std::string& eqId, double newSpeed);
+
     friend std::ostream& operator<<(std::ostream& os, const Member& m);
 
 private:
